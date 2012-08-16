@@ -37,7 +37,7 @@ namespace TfsManualTester.Web.Controllers
             catch (Exception authEx)
             {
                 success = false;
-                errorMessage = authEx.GetType().Name + ": " + authEx.Message;
+                errorMessage = authEx.GetType().Name + ": " + authEx.Message + Environment.NewLine + authEx.ToString();
             }
 
             return Json(
