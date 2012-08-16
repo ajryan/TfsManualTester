@@ -8,6 +8,7 @@
         $(document).ready(function () {
 
             var $loginError = $('#loginError');
+            var $submitButton = $('#submit');
             
             $('#submit').live(
                 'click',
@@ -44,8 +45,12 @@
             
             $loginError
                 .hide()
-                .ajaxStart(function() {
+                .ajaxStart(function () {
+                    $submitButton.attr('disabled', 'disabled');
                     $loginError.fadeTo(200, 0);
+                })
+                .ajaxStop(function () {
+                    $submitButton.removeAttr('disabled');
                 });
             
         });
@@ -56,6 +61,7 @@
 
 <form id="loginForm">
     <label for="tfsUrl">Tfs Url:</label><input id="tfsUrl" name="tfsUrl" type="text" /><br/>
+    <label for="domain">Domain:</label><input id="domain" name="domain" type="text" /><br/>
     <label for="userName">Username:</label><input id="userName" name="userName" type="text" /><br/>
     <label for="password">Password:</label><input id="password" name="password" type="password" /><br/>
     <button id="submit" type="submit">Login</button>
