@@ -3,6 +3,8 @@ using System.Net;
 using System.Web.Mvc;
 using Microsoft.TeamFoundation;
 using Microsoft.TeamFoundation.Client;
+using Microsoft.TeamFoundation.Framework.Client;
+using Microsoft.TeamFoundation.Server;
 using Microsoft.TeamFoundation.TestManagement.Client;
 
 namespace TfsManualTester.Web.Controllers

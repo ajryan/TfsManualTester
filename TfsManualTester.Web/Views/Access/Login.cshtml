@@ -73,14 +73,17 @@
                         method: "GET"
                     }).then(
                         function (response) {
+                            console && console.log('response', response);
                             showLoginError("Hello, " + response.first_name + " " + response.last_name + "!");
                         },
                         function (responseFailed) {
+                            console && console.log('responseFailed', responseFailed);
                             showLoginError("Error calling API: " + responseFailed.error.message);
                         }
                     );
                 }
                 else {
+                    console && console.log('session', session);
                     showLoginError("Error signing in: " + session.error_description);
                 }
             }
