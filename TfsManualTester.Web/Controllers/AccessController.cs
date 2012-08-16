@@ -20,7 +20,7 @@ namespace TfsManualTester.Web.Controllers
         }
 
         [HttpPost]
-        public JsonResult TfsLogin(string tfsUrl, string userName, string password, string domain)
+        public JsonResult TfsLogin(string tfsUrl, string oAuthToken)
         {
             bool success = true;
             string errorMessage = null;
@@ -30,7 +30,7 @@ namespace TfsManualTester.Web.Controllers
             {
                 var tfs = new TfsTeamProjectCollection(
                     new Uri(tfsUrl),
-                    new NetworkCredential(userName, password, domain));
+                    new TfsClientCredentials(new OAuthTokenCredential(oAuthToken)));
                 
                 tfs.EnsureAuthenticated();
 
@@ -51,9 +51,7 @@ namespace TfsManualTester.Web.Controllers
                     Success = success,
                     ErrorMessage = errorMessage,
                     TfsUrl = tfsUrl,
-                    UserName = userName,
-                    Password = password,
-                    Domain = domain,
+                    OAuthToken = oAuthToken,
                     PlanCount = planCount
                 });
         }

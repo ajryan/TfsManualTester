@@ -16,7 +16,10 @@
                 function(event) {
                     event.preventDefault();
 
-                    var formData = $('#loginForm').serialize();
+                    var formData = {
+                        tfsUrl: $('#tfsUrl').val(),
+                        oAuthToken: session.access_token
+                    };
                     console && console.log('formData', formData);
                     
                     $.ajax({
