@@ -11,6 +11,9 @@ namespace TfsManualTester.Web.Controllers
     {
         public ActionResult Login()
         {
+            ViewBag.LiveIdAppId = "00000000440D0A0B"; // TODO: move to appSettings
+            ViewBag.LiveIdRedirect = "https://tfsmanualtester.azurewebsites.net/";
+
             return View();
         }
 
@@ -30,7 +33,7 @@ namespace TfsManualTester.Web.Controllers
                 tfs.EnsureAuthenticated();
 
                 var testManagement = tfs.GetService<ITestManagementService>();
-                var testProject = testManagement.GetTeamProject("RealTimeMessaging");
+                var testProject = testManagement.GetTeamProject("CMMI_Scratch");
                 var testPlans = testProject.TestPlans.Query("SELECT * FROM TestPlan");
                 planCount = testPlans.Count;
             }
