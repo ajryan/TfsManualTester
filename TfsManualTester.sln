@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TfsManualTester.Web", "TfsManualTester.Web\TfsManualTester.Web.csproj", "{AEB14E9F-0C7A-47B0-A47B-5D8AAD77B523}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TfsManualTester.Test", "TfsManualTester.Test\TfsManualTester.Test.csproj", "{F90F263C-BCAD-4DBE-9C55-4868A5C8D8BC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,10 @@ Global
 		{AEB14E9F-0C7A-47B0-A47B-5D8AAD77B523}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AEB14E9F-0C7A-47B0-A47B-5D8AAD77B523}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AEB14E9F-0C7A-47B0-A47B-5D8AAD77B523}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F90F263C-BCAD-4DBE-9C55-4868A5C8D8BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F90F263C-BCAD-4DBE-9C55-4868A5C8D8BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F90F263C-BCAD-4DBE-9C55-4868A5C8D8BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F90F263C-BCAD-4DBE-9C55-4868A5C8D8BC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
