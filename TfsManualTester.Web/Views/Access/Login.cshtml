@@ -4,7 +4,6 @@
 
 @section scripts
 {
-    <script src="//js.live.net/v5.0/wl.js"></script>
     <script>
         $(document).ready(function () {
 
@@ -20,7 +19,6 @@
                         tfsUrl: $('#tfsUrl').val(),
                         serviceIdUsername: $('#userName').val(),
                         serviceIdPassword: $('#password').val()
-                        //oAuthToken: session.access_token
                     };
                     console && console.log('formData', formData);
                     
@@ -58,67 +56,17 @@
                 .ajaxStop(function () {
                     $submitButton.removeAttr('disabled');
                 });
-            
-
-            WL.Event.subscribe("auth.login", onLogin);
-            WL.init({
-                client_id: "@ViewBag.LiveIdAppId",
-                redirect_uri: "@ViewBag.LiveIdRedirect",
-                scope: "wl.signin",
-                response_type: "token"
-            });
-            WL.ui({
-                name: "signin",
-                element: "signin"
-            });
-            function onLogin(session) {
-                if (!session.error) {
-                    WL.api({
-                        path: "me",
-                        method: "GET"
-                    }).then(
-                        function (response) {
-                            console && console.log('response', response);
-                            showLoginError("Hello, " + response.first_name + " " + response.last_name + "!");
-                        },
-                        function (responseFailed) {
-                            console && console.log('responseFailed', responseFailed);
-                            showLoginError("Error calling API: " + responseFailed.error.message);
-                        }
-                    );
-                }
-                else {
-                    console && console.log('session', session);
-                    showLoginError("Error signing in: " + session.error_description);
-                }
-            }
         });
     </script>
 }
-
-<h2>LiveId Login</h2>
-<div id="signin"></div>
-
-@*<iframe 
-    id="WebAuthControl" 
-    name="WebAuthControl"
-    src="https://login.live.com/controls/WebAuth.htm?appid=@ViewBag.LiveIdAppId&style=font-size%3A+10pt%3B+font-family%
-        3A+verdana%3B+background%3A+white%3B"
-    width="80px"
-    height="20px"
-    marginwidth="0"
-    marginheight="0"
-    align="middle"
-    frameborder="0"
-    scrolling="no"></iframe>*@
 
 <h2>Tfs Login</h2>
 
 <form id="loginForm">
     <label for="tfsUrl">Tfs Url:</label><input id="tfsUrl" name="tfsUrl" type="text" /><br />
-    <label for="domain">Domain:</label><input id="domain" name="domain" type="text" /><br />
     <label for="userName">Username:</label><input id="userName" name="userName" type="text" /><br />
     <label for="password">Password:</label><input id="password" name="password" type="password" /><br />
+    <label for="impersonate">Impersonate:</label><input id="impersonate" name="impersonate" type="text" /><br />
     <button id="submit" type="submit">Login</button>
 </form>
 
