@@ -5,6 +5,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TfsManualTester.Web", "TfsM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TfsManualTester.Test", "TfsManualTester.Test\TfsManualTester.Test.csproj", "{F90F263C-BCAD-4DBE-9C55-4868A5C8D8BC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{54A72370-30E1-4875-8FA9-CA6460186C06}"
+	ProjectSection(SolutionItems) = preProject
+		Libs\Microsoft.TeamFoundation.Client.dll = Libs\Microsoft.TeamFoundation.Client.dll
+		Libs\Microsoft.TeamFoundation.Common.dll = Libs\Microsoft.TeamFoundation.Common.dll
+		Libs\Microsoft.TeamFoundation.dll = Libs\Microsoft.TeamFoundation.dll
+		Libs\Microsoft.TeamFoundation.TestManagement.Client.dll = Libs\Microsoft.TeamFoundation.TestManagement.Client.dll
+		Libs\Microsoft.TeamFoundation.WorkItemTracking.Client.dll = Libs\Microsoft.TeamFoundation.WorkItemTracking.Client.dll
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
