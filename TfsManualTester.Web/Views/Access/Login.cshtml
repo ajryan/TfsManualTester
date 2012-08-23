@@ -18,7 +18,9 @@
 
                     var formData = {
                         tfsUrl: $('#tfsUrl').val(),
-                        oAuthToken: session.access_token
+                        serviceIdUsername: $('#userName').val(),
+                        serviceIdPassword: $('#password').val()
+                        //oAuthToken: session.access_token
                     };
                     console && console.log('formData', formData);
                     

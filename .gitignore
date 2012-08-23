@@ -12,3 +12,6 @@
 *.vssscc
 *.ReSharper
 *.vspscc
+*.sublime-project
+
+*.sublime-workspace

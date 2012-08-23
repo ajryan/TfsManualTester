@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Net;
 using System.Web.Mvc;
 using Microsoft.TeamFoundation.Client;
+using Microsoft.TeamFoundation.Framework.Client;
 using Microsoft.TeamFoundation.TestManagement.Client;
 
 namespace TfsManualTester.Web.Controllers
@@ -16,7 +18,7 @@ namespace TfsManualTester.Web.Controllers
         }
 
         [HttpPost]
-        public JsonResult TfsLogin(string tfsUrl, string oAuthToken)
+        public JsonResult TfsLogin(string tfsUrl, string serviceIdUsername, string serviceIdPassword)
         {
             bool success = true;
             string errorMessage = null;
@@ -24,9 +26,11 @@ namespace TfsManualTester.Web.Controllers
 
             try
             {
+                var credentialsProvider = new ServiceIdentityCredentialsProvider(serviceIdUsername, serviceIdPassword);
                 var tfs = new TfsTeamProjectCollection(
                     new Uri(tfsUrl),
-                    new TfsClientCredentials(new OAuthTokenCredential(oAuthToken)));
+                    CredentialCache.DefaultCredentials,
+                    credentialsProvider);
                 
                 tfs.EnsureAuthenticated();
 
@@ -47,7 +51,8 @@ namespace TfsManualTester.Web.Controllers
                     Success = success,
                     ErrorMessage = errorMessage,
                     TfsUrl = tfsUrl,
-                    OAuthToken = oAuthToken,
+                    ServiceIdUsername = serviceIdUsername,
+                    ServiceIdPassword = serviceIdPassword,
                     PlanCount = planCount
                 });
         }
