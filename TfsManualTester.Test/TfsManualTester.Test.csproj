@@ -40,6 +40,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <Choose>
@@ -55,8 +56,14 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="TfsAuthTest.cs" />
+    <Compile Include="AccessControllerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TfsManualTester.Web\TfsManualTester.Web.csproj">
+      <Project>{AEB14E9F-0C7A-47B0-A47B-5D8AAD77B523}</Project>
+      <Name>TfsManualTester.Web</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
