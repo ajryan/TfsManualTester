@@ -6,6 +6,9 @@ using System.Web.Security;
 
 namespace TfsManualTester.Web.Authorization
 {
+    // this should probably be the standard aspnet authattribute
+    // so we can return JSON to POST
+
     [AttributeUsage(
         AttributeTargets.Method | AttributeTargets.Class,
         Inherited = true,
