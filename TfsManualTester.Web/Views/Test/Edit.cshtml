@@ -6,31 +6,29 @@
     <div class="span12"><h2>Edit Test</h2></div>
 </div>
 <div class="row-fluid">
-    <div class="span3">
-        <form class="form-inline">
     
-            @*TODO: dropdown*@
-            <div class="control-group">
-                <label class="control-label" for="teamProject">Team Project:</label>
-                <div class="controls">
-                    <input data-bind="value: TeamProject" id="teamProject" name="teamProject" type="text" />
-                </div>
+    <form class="form-inline span3">
+        @*TODO: dropdown*@
+        <div class="control-group">
+            <label class="control-label" for="teamProject">Team Project:</label>
+            <div class="controls">
+                <input data-bind="value: TeamProject" id="teamProject" name="teamProject" type="text" />
             </div>
+        </div>
     
-            <div class="control-group">
-                <label class="control-label" for="testCaseId">Test Case ID:</label>
-                <div class="controls">
-                    <input data-bind="value: TestCaseId" id="testCaseId" name="testCaseId" type="text" />
-                </div>
+        <div class="control-group">
+            <label class="control-label" for="testCaseId">Test Case ID:</label>
+            <div class="controls">
+                <input data-bind="value: TestCaseId" id="testCaseId" name="testCaseId" type="text" />
             </div>
+        </div>
     
-            <div class="control-group">
-                <div class="controls">
-                    <button id="loadTestCaseBtn" type="submit">Load</button>
-                </div>
+        <div class="control-group">
+            <div class="controls">
+                <button id="loadTestCaseBtn" type="submit">Load</button>
             </div>
-        </form>
-    </div>
+        </div>
+    </form>
     
     <div class="span9">
         <div data-bind="visible: ErrorMessage">
@@ -39,7 +37,7 @@
 
         <div>
             @*TODO: template to avoid initial appear/disappear*@
-            <table data-bind="visible: TestSteps().length > 0" class="table-bordered table-striped">
+            <table data-bind="visible: TestSteps().length > 0" class="table-bordered table-striped" style="width: 100%">
                 <thead>
                     <tr>
                         <th></th>
