@@ -2,13 +2,48 @@
     ViewBag.Title = "Login";
 }
 
+<h2>TFS Login</h2>
+
+<form id="loginForm" class="form-horizontal">
+    <div class="control-group">
+        <label class="control-label" for="tfsUrl">Tfs Url:</label>
+        <div class="controls">
+            <input id="tfsUrl" name="tfsUrl" type="text" />
+        </div>
+    </div>
+    
+    <div class="control-group">
+        <label class="control-label" for="userName">Username:</label>
+        <div class="controls">
+            <input id="userName" name="userName" type="text" />
+        </div>
+    </div>
+    
+    <div class="control-group">
+        <label class="control-label" for="password">Password:</label>
+        <div class="controls">
+            <input id="password" name="password" type="password" />
+        </div>
+    </div>
+
+    <div class="control-group">
+        <div class="controls">
+            <button id="submit" type="submit">Login</button>
+        </div>
+    </div>
+</form>
+
+<div id="loginError" style="display: none">
+</div>
+
 @section scripts
 {
     <script>
         $(document).ready(function () {
 
-            var $loginError = $('#loginError');
-            var $submitButton = $('#submit');
+            var $loginError = $('#loginError'),
+                $submitButton = $('#submit'),
+                loginReturnUrl = '@ViewBag.ReturnUrl';
             
             $('#submit').live(
                 'click',
@@ -31,11 +66,16 @@
                             if (data.Success === false) {
                                 showLoginError(data.ErrorMessage);
                             }
+                            else {
+                                var redirect = loginReturnUrl || data.RedirectUrl;
+                                window.location = redirect;
+                            }
                         },
                         error: function (xhr, status, error) {
                             console && console.log('status', status);
                             console && console.log('error', error);
 
+                            $submitButton.removeAttr('disabled');
                             showLoginError(status + ': ' + error);
                         }
                     });
@@ -46,29 +86,13 @@
                 $loginError.text(message);
                 $loginError.fadeTo(200, 1);
             }
-            
+
             $loginError
                 .hide()
-                .ajaxStart(function () {
+                .ajaxStart(function() {
                     $submitButton.attr('disabled', 'disabled');
                     $loginError.fadeTo(200, 0);
-                })
-                .ajaxStop(function () {
-                    $submitButton.removeAttr('disabled');
                 });
         });
     </script>
 }
-
-<h2>Tfs Login</h2>
-
-<form id="loginForm">
-    <label for="tfsUrl">Tfs Url:</label><input id="tfsUrl" name="tfsUrl" type="text" /><br />
-    <label for="userName">Username:</label><input id="userName" name="userName" type="text" /><br />
-    <label for="password">Password:</label><input id="password" name="password" type="password" /><br />
-    <label for="impersonate">Impersonate:</label><input id="impersonate" name="impersonate" type="text" /><br />
-    <button id="submit" type="submit">Login</button>
-</form>
-
-<div id="loginError" style="display: none">
-</div>

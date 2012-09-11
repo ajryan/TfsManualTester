@@ -1,15 +1,17 @@
 ﻿using System;
-using System.Net;
+using System.Web;
 using System.Web.Mvc;
-using Microsoft.TeamFoundation.Client;
-using Microsoft.TeamFoundation.TestManagement.Client;
+using System.Web.Security;
+using TfsManualTester.Web.Authorization;
+using TfsManualTester.Web.Tfs;
 
 namespace TfsManualTester.Web.Controllers
 {
     public class AccessController : Controller
     {
-        public ActionResult Login()
+        public ActionResult Login(string returnUrl)
         {
+            ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
@@ -18,22 +20,28 @@ namespace TfsManualTester.Web.Controllers
         {
             bool success = true;
             string errorMessage = null;
-            int planCount = 0;
 
             try
             {
-                var credentialsProvider = new ServiceIdentityCredentialsProvider(serviceIdUsername, serviceIdPassword);
-                var tfs = new TfsTeamProjectCollection(
-                    new Uri(tfsUrl),
-                    CredentialCache.DefaultCredentials,
-                    credentialsProvider);
-                
-                tfs.EnsureAuthenticated();
+                new TeamProject(new Uri(tfsUrl), serviceIdUsername, serviceIdPassword).EnsureAuthenticated();
 
-                var testManagement = tfs.GetService<ITestManagementService>();
-                var testProject = testManagement.GetTeamProject("CMMI_Scratch");        // TODO: to appsettings
-                var testPlans = testProject.TestPlans.Query("SELECT * FROM TestPlan");
-                planCount = testPlans.Count;
+                var userData = new TfsUserData {Password = serviceIdPassword, TfsUrl = tfsUrl};
+
+                var authTicket = new FormsAuthenticationTicket(
+                    2,
+                    serviceIdUsername,
+                    DateTime.Now,
+                    DateTime.Now.AddMinutes(FormsAuthentication.Timeout.TotalMinutes),
+                    false,
+                    userData.Serialize());
+
+                var authCookie = new HttpCookie(
+                    FormsAuthentication.FormsCookieName,
+                    FormsAuthentication.Encrypt(authTicket))
+                {
+                    HttpOnly = true
+                };
+                Response.AppendCookie(authCookie);
             }
             catch (Exception authEx)
             {
@@ -46,10 +54,7 @@ namespace TfsManualTester.Web.Controllers
                 {
                     Success = success,
                     ErrorMessage = errorMessage,
-                    TfsUrl = tfsUrl,
-                    ServiceIdUsername = serviceIdUsername,
-                    ServiceIdPassword = serviceIdPassword,
-                    PlanCount = planCount
+                    RedirectUrl = Url.Action("Edit","Test")
                 });
         }
     }

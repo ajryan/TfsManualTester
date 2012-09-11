@@ -10,7 +10,9 @@ namespace TfsManualTester.Test
         public void LoginTest()
         {
             var controller = new AccessController();
-            controller.Login();
+            controller.Login(null);
+
+            // TOOD: assert on viewbag for returnurl
         }
     }
 }
