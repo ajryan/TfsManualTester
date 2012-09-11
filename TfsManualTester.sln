@@ -16,6 +16,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{54A72370-3
 		Libs\Microsoft.TeamFoundation.WorkItemTracking.Client.Cache.dll = Libs\Microsoft.TeamFoundation.WorkItemTracking.Client.Cache.dll
 		Libs\Microsoft.TeamFoundation.WorkItemTracking.Client.DataStore.dll = Libs\Microsoft.TeamFoundation.WorkItemTracking.Client.DataStore.dll
 		Libs\Microsoft.TeamFoundation.WorkItemTracking.Client.dll = Libs\Microsoft.TeamFoundation.WorkItemTracking.Client.dll
+		Libs\Microsoft.TeamFoundation.WorkItemTracking.Client.Provision.dll = Libs\Microsoft.TeamFoundation.WorkItemTracking.Client.Provision.dll
+		Libs\Microsoft.TeamFoundation.WorkItemTracking.Client.QueryLanguage.dll = Libs\Microsoft.TeamFoundation.WorkItemTracking.Client.QueryLanguage.dll
+		Libs\Microsoft.TeamFoundation.WorkItemTracking.Client.RuleEngine.dll = Libs\Microsoft.TeamFoundation.WorkItemTracking.Client.RuleEngine.dll
 		Libs\Microsoft.TeamFoundation.WorkItemTracking.Proxy.dll = Libs\Microsoft.TeamFoundation.WorkItemTracking.Proxy.dll
 	EndProjectSection
 EndProject
