@@ -40,10 +40,14 @@ namespace TfsManualTester.Web.Tfs
         {
             EnsureTfs();
 
+            // ensuring TFS
+            var tfs = TeamFoundationServerFactory.GetServer(_uri);
+            var createdStore = new WorkItemStore(tfs);
+
             // ensuring WIT store
-            var store = _tfs.GetService<WorkItemStore>();
-            store.RefreshCache();
-            var witProject = store.Projects[teamProject];
+            var wiStore = _tfs.GetService<WorkItemStore>();
+            wiStore.RefreshCache();
+            var witProject = wiStore.Projects[teamProject];
 
             var testProject = GetTestProject(teamProject);
             return testProject.TestCases.Find(testCaseId);
