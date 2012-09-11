@@ -2,6 +2,7 @@
 using System.Net;
 using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.TestManagement.Client;
+using Microsoft.TeamFoundation.WorkItemTracking.Client;
 
 namespace TfsManualTester.Web.Tfs
 {
@@ -38,6 +39,11 @@ namespace TfsManualTester.Web.Tfs
         public ITestCase GetTestCase(string teamProject, int testCaseId)
         {
             EnsureTfs();
+
+            // ensuring WIT store
+            var store = _tfs.GetService<WorkItemStore>();
+            store.RefreshCache();
+            var witProject = store.Projects[teamProject];
 
             var testProject = GetTestProject(teamProject);
             return testProject.TestCases.Find(testCaseId);
