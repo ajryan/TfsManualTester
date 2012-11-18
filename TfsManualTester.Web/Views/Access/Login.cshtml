@@ -1,5 +1,28 @@
-﻿@{
+﻿@using System.Web.Optimization
+@{
     ViewBag.Title = "Login";
+}
+
+@section scripts
+{
+    @Scripts.Render("~/Scripts/Views/AccessLogin.js")
+
+    <script>
+        // TODO: this should really take a model from the controller with
+        // the userprincipal and return url
+        @{
+            var tfsUrl = String.Empty;
+            var userName = String.Empty;
+            if (ViewBag.Principal != null)
+            {
+                tfsUrl = ViewBag.Principal.TfsUrl;
+                userName = ViewBag.Principal.UserName;
+            }
+        }
+        $(document).ready(function () {
+            TfsManualTester.Login.Start('@ViewBag.ReturnUrl', '@tfsUrl', '@userName');
+        });
+    </script>
 }
 
 <h2>TFS Login</h2>
@@ -8,91 +31,32 @@
     <div class="control-group">
         <label class="control-label" for="tfsUrl">Tfs Url:</label>
         <div class="controls">
-            <input id="tfsUrl" name="tfsUrl" type="text" />
+            <input id="tfsUrl" name="tfsUrl" type="text" data-bind="value: tfsUrl" class="initial-focus" required />
         </div>
     </div>
     
     <div class="control-group">
         <label class="control-label" for="userName">Username:</label>
         <div class="controls">
-            <input id="userName" name="userName" type="text" />
+            <input id="userName" name="userName" type="text" data-bind="value: userName" required />
         </div>
     </div>
     
     <div class="control-group">
         <label class="control-label" for="password">Password:</label>
         <div class="controls">
-            <input id="password" name="password" type="password" />
+            <input id="password" name="password" type="password" data-bind="value: password" required />
         </div>
     </div>
 
     <div class="control-group">
         <div class="controls">
-            <button id="submit" type="submit">Login</button>
+            <button id="submit" type="submit" class="btn btn-primary" data-url="@Url.Action("TfsLogin")" data-loading-text="Logging in...">Login</button>
         </div>
     </div>
 </form>
 
-<div id="loginError" style="display: none">
+@* TODO: fade-visible knockout binding *@
+<div id="loginError" data-bind="visible: errorMessage" class="alert alert-error">
+    <span data-bind="text: errorMessage"></span>
 </div>
-
-@section scripts
-{
-    <script>
-        $(document).ready(function () {
-
-            var $loginError = $('#loginError'),
-                $submitButton = $('#submit'),
-                loginReturnUrl = '@ViewBag.ReturnUrl';
-            
-            $('#submit').live(
-                'click',
-                function(event) {
-                    event.preventDefault();
-
-                    var formData = {
-                        tfsUrl: $('#tfsUrl').val(),
-                        serviceIdUsername: $('#userName').val(),
-                        serviceIdPassword: $('#password').val()
-                    };
-                    console && console.log('formData', formData);
-                    
-                    $.ajax({
-                        url: '@Url.Action("TfsLogin")',
-                        data: formData,
-                        type: 'POST',
-                        success: function (data) {
-                            console && console.log('data', data);
-                            if (data.Success === false) {
-                                showLoginError(data.ErrorMessage);
-                            }
-                            else {
-                                var redirect = loginReturnUrl || data.RedirectUrl;
-                                window.location = redirect;
-                            }
-                        },
-                        error: function (xhr, status, error) {
-                            console && console.log('status', status);
-                            console && console.log('error', error);
-
-                            $submitButton.removeAttr('disabled');
-                            showLoginError(status + ': ' + error);
-                        }
-                    });
-                }
-            );
-
-            function showLoginError(message) {
-                $loginError.text(message);
-                $loginError.fadeTo(200, 1);
-            }
-
-            $loginError
-                .hide()
-                .ajaxStart(function() {
-                    $submitButton.attr('disabled', 'disabled');
-                    $loginError.fadeTo(200, 0);
-                });
-        });
-    </script>
-}

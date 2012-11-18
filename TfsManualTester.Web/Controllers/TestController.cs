@@ -13,8 +13,7 @@ namespace TfsManualTester.Web.Controllers
         {
             // TODO: split into two models - test load vs actual test
 
-            var testCase = new TestCase("Unknown project");
-            //testCase.TestSteps.Add(new TestStep { Title = "title", Expected = "expected" });
+            var testCase = new TestCase(String.Empty);
             ViewBag.TestJson = new JavaScriptSerializer().Serialize(testCase);
             return View();
         }

@@ -6,13 +6,13 @@ namespace TfsManualTester.Web.Tfs
     public class TestCase
     {
         public string TeamProject { get; set; }
-        public int TestCaseId { get; set; }
+        public int? TestCaseId { get; set; }
         public List<TestStep> TestSteps { get; private set; }
 
         public TestCase(string teamProject)
         {
             TeamProject = teamProject;
-            TestCaseId = 0;
+            TestCaseId = null;
             TestSteps = new List<TestStep>();
         }
 

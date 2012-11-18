@@ -22,13 +22,15 @@ namespace TfsManualTester.Web
             bundles.Add(
                 new ScriptBundle("~/bundles/knockout")
                     .Include("~/Scripts/knockout-{version}.js")
-                    .Include("~/Scripts/knockout.mapping-latest.js"));
+                    .Include("~/Scripts/knockout.mapping-latest.js")
+                    .Include("~/Scripts/knockout.validation.js"));
 
             bundles.Add(
                 new StyleBundle("~/bundles/bootstrap-css")
                     .Include("~/Content/bootstrap.css")
                     .Include("~/Content/bootstrap-custom.css")
                     .Include("~/Content/bootstrap-responsive.css"));
+
         }
     }
 }

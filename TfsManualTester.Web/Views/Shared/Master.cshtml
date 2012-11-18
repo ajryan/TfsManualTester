@@ -25,6 +25,7 @@
                 @Html.ActionLink("TfsManualTester", "Login", "Access", null, new { @class =  "brand" })
                 <div class="nav-collapse collapse">
                     <ul class="nav">
+                        @* todo: jQuery for active li *@
                         <li class="active">@Html.ActionLink("Login", "Login", "Access")</li>
                         <li>@Html.ActionLink("Edit Test", "Edit", "Test")</li>
                     </ul>
@@ -37,6 +38,7 @@
     <div class="container-fluid">
         @RenderBody()
     </div>
+    
     @Scripts.Render(
         "~/bundles/jquery",
         "~/bundles/bootstrap-js",

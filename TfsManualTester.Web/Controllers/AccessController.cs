@@ -11,7 +11,14 @@ namespace TfsManualTester.Web.Controllers
     {
         public ActionResult Login(string returnUrl)
         {
+            var authorizedPrincipal = UserDataPrincipal.InitFromAuthCookie(HttpContext);
+            if (authorizedPrincipal != null)
+            {
+                ViewBag.Principal = authorizedPrincipal;
+            }
+            
             ViewBag.ReturnUrl = returnUrl;
+
             return View();
         }
 
@@ -23,30 +30,17 @@ namespace TfsManualTester.Web.Controllers
 
             try
             {
-                new TeamProject(new Uri(tfsUrl), serviceIdUsername, serviceIdPassword).EnsureAuthenticated();
+                new TeamProject(new Uri(tfsUrl), serviceIdUsername, serviceIdPassword)
+                    .EnsureAuthenticated(false);
 
                 var userData = new TfsUserData {Password = serviceIdPassword, TfsUrl = tfsUrl};
-
-                var authTicket = new FormsAuthenticationTicket(
-                    2,
-                    serviceIdUsername,
-                    DateTime.Now,
-                    DateTime.Now.AddMinutes(FormsAuthentication.Timeout.TotalMinutes),
-                    false,
-                    userData.Serialize());
-
-                var authCookie = new HttpCookie(
-                    FormsAuthentication.FormsCookieName,
-                    FormsAuthentication.Encrypt(authTicket))
-                {
-                    HttpOnly = true
-                };
+                var authCookie = UserDataPrincipal.CreateAuthCookie(serviceIdUsername, userData);
                 Response.AppendCookie(authCookie);
             }
-            catch (Exception authEx)
+            catch (Exception ex)
             {
                 success = false;
-                errorMessage = authEx.GetType().Name + ": " + authEx.Message + Environment.NewLine + authEx.ToString();
+                errorMessage = ex.GetType().Name + ": " + ex.Message + Environment.NewLine + ex.ToString();
             }
 
             return Json(

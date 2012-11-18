@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Web;
 using System.Web.Mvc;
-using System.Web.Script.Serialization;
-using System.Web.Security;
 
 namespace TfsManualTester.Web.Authorization
 {
-    // this should probably be the standard aspnet authattribute
-    // so we can return JSON to POST
 
     [AttributeUsage(
         AttributeTargets.Method | AttributeTargets.Class,
@@ -15,43 +10,23 @@ namespace TfsManualTester.Web.Authorization
         AllowMultiple = true)]
     public class UserDataAuthorizeAttribute : AuthorizeAttribute
     {
-        protected override bool AuthorizeCore(HttpContextBase httpContext)
+        public override void OnAuthorization(AuthorizationContext filterContext)
         {
-            bool isAuthenticated = base.AuthorizeCore(httpContext);
-            if (!isAuthenticated)
-                return false;
+            base.OnAuthorization(filterContext);
 
-            string authCookieName = FormsAuthentication.FormsCookieName;
-            
-            if (!httpContext.User.Identity.IsAuthenticated ||
-                httpContext.Request.Cookies == null ||
-                httpContext.Request.Cookies[authCookieName] == null)
+            // if we get an authorized principal, good to go
+            var principal = UserDataPrincipal.InitFromAuthCookie(filterContext.HttpContext);
+            if (principal != null)
             {
-                if (httpContext.Request.HttpMethod.Equals("POST", StringComparison.OrdinalIgnoreCase))
-                {
-                    httpContext.Response.Write(new JavaScriptSerializer().Serialize(new { ErrorMessage = "Not authorized", Success = false }));
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                filterContext.HttpContext.User = principal;
+                return;
             }
 
-            var authCookie = httpContext.Request.Cookies[authCookieName];
-            var authTicket = FormsAuthentication.Decrypt(authCookie.Value);
-
-            var userData = TfsUserData.DeSerialize(authTicket.UserData);
-
-            var principal = new UserDataPrincipal
+            // not authorized - special case for HTTP POST
+            if (filterContext.HttpContext.Request.HttpMethod.Equals("POST", StringComparison.OrdinalIgnoreCase))
             {
-                UserName = authTicket.Name,
-                Password = userData.Password,
-                TfsUrl = userData.TfsUrl
-            };
-
-            httpContext.User = principal;
-            return true;
+                filterContext.Result = new JsonResult {Data = new {ErrorMessage = "Not authorized", Success = false}};
+            }
         }
     }
 }

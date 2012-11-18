@@ -1,0 +1,19 @@
+﻿/*
+ *   Test/Edit
+ */
+textarea.test-step {
+    border: 1px solid #ccc;
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+    height: 20px;
+    margin: 0;
+    padding: 2px;
+    resize: none;
+}
+
+span.test-step {
+    padding: 3px 5px 0 0;
+    text-align: right;
+}
+/* todo: media query for left-aligned step number when spans wrap */

@@ -1,145 +1,53 @@
-﻿@{
+﻿@using System.Web.Optimization
+@{
     ViewBag.Title = "Edit Test";
+}
+
+@section styles 
+{
+    @Styles.Render("~/Content/TestEdit.css")
+}
+
+@section scripts
+{
+    @Scripts.Render(
+        "~/Scripts/jquery.autoresize.js",
+        "~/Scripts/Views/TestEdit.js")
+
+    <script>
+        $(document).ready(function() {
+            var testCase = @Html.Raw(ViewBag.TestJson);
+            TfsManualTester.TestCaseEditor.Start(testCase);
+     });
+    </script>
 }
 
 <div class="row-fluid">
     <div class="span12"><h2>Edit Test</h2></div>
 </div>
-<div class="row-fluid">
-    
-    <form class="form-inline span3">
-        @*TODO: dropdown*@
-        <div class="control-group">
-            <label class="control-label" for="teamProject">Team Project:</label>
-            <div class="controls">
-                <input data-bind="value: TeamProject" id="teamProject" name="teamProject" type="text" />
-            </div>
-        </div>
-    
-        <div class="control-group">
-            <label class="control-label" for="testCaseId">Test Case ID:</label>
-            <div class="controls">
-                <input data-bind="value: TestCaseId" id="testCaseId" name="testCaseId" type="text" />
-            </div>
-        </div>
-    
-        <div class="control-group">
-            <div class="controls">
-                <button id="loadTestCaseBtn" type="submit">Load</button>
-            </div>
-        </div>
-    </form>
-    
-    <div class="span9">
-        <div data-bind="visible: ErrorMessage">
-            <span data-bind="text: ErrorMessage"/>
-        </div>
 
-        <div>
-            @*TODO: template to avoid initial appear/disappear*@
-            <table data-bind="visible: TestSteps().length > 0" class="table-bordered table-striped" style="width: 100%">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>Action</th>
-                        <th>Expected Result</th>
-                    </tr>
-                </thead>
-                <tbody data-bind="foreach: TestSteps">
-                    <tr>
-                        <td><span data-bind="text: $index() + 1"/></td>
-                        <td><input data-bind="value: Title, valueUpdate: 'keyup'"/></td>
-                        <td><input data-bind="value: Expected, valueUpdate: 'keyup'"/></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+<div class="row-fluid">
+    <form class="span12 form-inline">
+        @*TODO: dropdown*@
+        <input data-bind="value: TeamProject" id="teamProject" name="teamProject" type="text" class="initial-focus" placeholder="Team Project" required />
+        <input data-bind="value: TestCaseId" id="testCaseId" name="testCaseId" type="text" placeholder="Test Case Id" required />
+        <button id="loadTestCaseBtn" type="submit" data-url="@Url.Action("Load")" class="btn btn-primary">Load</button>
+    </form>
+</div>
+
+<div class="row-fluid">
+    <div data-bind="visible: ErrorMessage" class="span12 alert alert-error" style="display: none">
+        <span data-bind="text: ErrorMessage"/>
     </div>
 </div>
 
-@section scripts
-{
-    <script>
-        // TODO: move to separate file
-        
-        TfsManualTester.TestCaseEditor = {
-            Start : function(testCase) {
-                var viewModel = TfsManualTester.TestCaseEditor.BuildViewModel(testCase);
-                TfsManualTester.TestCaseEditor.WireEvents(viewModel);
-                ko.applyBindings(viewModel);
-            }
-        };
-
-        TfsManualTester.TestCaseEditor.BuildViewModel = function(testCase) {
-            console && console.log && console.log(testCase);
-            
-            // this initial model should be creatable with fromJSON
-            // but when the initial TestSteps is an empty list, ko
-            // fromJSON doesn't create an observable array
-            // also, need to ensure properties of objects in the array
-            // are themselves observable...
-            
-            var model = {
-                TeamProject: ko.observable(testCase.TeamProject),
-                TestCaseId: ko.observable(testCase.TestCaseId),
-                TestSteps: ko.observableArray(
-                    ko.utils.arrayMap(testCase.TestSteps, function (testStep) {
-                        return {
-                            Id: ko.observable(testStep.Id),
-                            Title: ko.observable(testStep.Title),
-                            Expected: ko.observable(testStep.Expected)
-                        };
-                    })),
-                ErrorMessage: ko.observable('')
-            };
-            
-            model.dump = function() {
-                console && console.log && console.log(this);
-            };
-            
-            model.loadTest = function(event) {
-                event.preventDefault();
-                    
-                // TODO: refactor the logging and error-showing stuff, incl known response from auth attrib
-                // TODO: global func that ensures log is available
-
-                // TODO: simpler post, see conery demo
-                $.ajax({
-                    url: '@Url.Action("Load")',
-                    data: { teamProject: model.TeamProject(), testCaseId: model.TestCaseId() },
-                    type: 'POST',
-                    success: function (data) {
-                        console && console.log('data', data);
-                        if (data.Success === false) {
-                            model.showError(data.ErrorMessage);
-                        }
-                        else {
-                            model.ErrorMessage('');
-                            model.TestSteps(data.TestSteps);
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        model.showError(status + ': ' + error);
-                    }
-                });
-            };
-
-            model.showError = function(errorMessage) {
-                model.TestSteps([]);
-                model.ErrorMessage(errorMessage);
-            };
-
-            TfsManualTester.TestCaseEditor.CurrentViewModel = model;
-            return model;
-        };
-
-        TfsManualTester.TestCaseEditor.WireEvents = function(viewModel) {
-            $('#loadTestCaseBtn').live('click', viewModel.loadTest);
-        };
-
-        $(document).ready(function() {
-            var testCase = @Html.Raw(ViewBag.TestJson);
-            TfsManualTester.TestCaseEditor.Start(testCase);
-        });
-    </script>
-}
+@*TODO: template to avoid initial appear/disappear*@
+<div class="row-fluid">
+    <form data-bind="visible: TestSteps().length > 0, foreach: TestSteps" class="span12">
+        <div class="controls">
+            <span data-bind="text: $index() + 1" class="span1 test-step"></span>
+            <textarea data-bind="value: Title" wrap="off" class="span6 test-step"></textarea>
+            <textarea data-bind="value: Expected" wrap="off" class="span5 test-step"></textarea>
+        </div>
+    </form>
+</div>

@@ -2,6 +2,18 @@
  *  Bootstrap customizations
  */
 
+/* no shadow on selected text, html5boilerplate selcolor :-) */
+::-moz-selection {
+    background: #b3d4fc;
+    -webkit-text-shadow: none;
+    text-shadow: none;
+}
+::selection {
+    background: #b3d4fc;
+    -webkit-text-shadow: none;
+    text-shadow: none;
+}
+
 /* navbar-relative body padding */
 body {
     padding-top: 60px;
