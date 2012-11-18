@@ -9,8 +9,8 @@ namespace TfsManualTester.Test
         [TestMethod]
         public void LoginTest()
         {
-            var controller = new AccessController();
-            controller.Login(null);
+            //var controller = new AccessController();
+            //controller.Login(null);
 
             // TOOD: assert on viewbag for returnurl
         }

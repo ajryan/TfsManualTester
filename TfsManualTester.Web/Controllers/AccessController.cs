@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Web;
 using System.Web.Mvc;
-using System.Web.Security;
 using TfsManualTester.Web.Authorization;
 using TfsManualTester.Web.Tfs;
 
