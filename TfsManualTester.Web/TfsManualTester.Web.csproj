@@ -180,6 +180,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="Authorization\TfsBasicAuthenticationAttribute.cs" />
     <Compile Include="Authorization\TfsUserData.cs" />
     <Compile Include="Authorization\UserDataAuthorizeAttribute.cs" />
     <Compile Include="Authorization\UserDataPrincipal.cs" />

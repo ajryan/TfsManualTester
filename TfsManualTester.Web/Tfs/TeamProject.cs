@@ -72,9 +72,25 @@ namespace TfsManualTester.Web.Tfs
                 if (allowCache && _tfs != null)
                     return;
 
-                var credentialsProvider = new ServiceIdentityCredentialsProvider(_userName, _password);
-                _tfs = new TfsTeamProjectCollection(
-                    _uri, CredentialCache.DefaultCredentials, credentialsProvider);
+                bool tfsService =
+                    _uri.Host.EndsWith("tfspreview.com", StringComparison.OrdinalIgnoreCase) ||
+                    _uri.Host.EndsWith("visualstudio.com", StringComparison.OrdinalIgnoreCase);
+
+                if (tfsService)
+                {
+                    var credentialsProvider = new ServiceIdentityCredentialsProvider(_userName, _password);
+                    _tfs = new TfsTeamProjectCollection(
+                        _uri, CredentialCache.DefaultCredentials, credentialsProvider);
+                }
+                else
+                {
+                    var userNameTokens = _userName.Split(new []{'\\'}, 2, StringSplitOptions.RemoveEmptyEntries);
+                    var credential = userNameTokens.Length > 1
+                        ? new NetworkCredential(userNameTokens[1], _password, userNameTokens[0])
+                        : new NetworkCredential(_userName, _password);
+
+                    _tfs = new TfsTeamProjectCollection(_uri, credential);
+                }
 
                 HttpRuntime.Cache.Add(
                     CacheKey,
