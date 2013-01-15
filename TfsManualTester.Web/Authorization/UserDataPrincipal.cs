@@ -1,11 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Principal;
 using System.Text;
 using System.Web;
+using System.Web.Script.Serialization;
 using System.Web.Security;
+using Microsoft.TeamFoundation.Client;
 
 namespace TfsManualTester.Web.Authorization
 {
@@ -15,30 +18,34 @@ namespace TfsManualTester.Web.Authorization
         public string UserName { get; set; }
         public string Password { get; set; }
 
+        public UserDataPrincipal()
+        {
+            // For deserialization
+        }
+
+        public UserDataPrincipal(string tfsUrl, string userName, string password)
+        {
+            TfsUrl = tfsUrl;
+            UserName = userName;
+            Password = password;
+        }
+
         public static UserDataPrincipal Current
         {
             get { return HttpContext.Current.User as UserDataPrincipal; }
         }
 
-        public static HttpCookie CreateAuthCookie(string serviceIdUsername, TfsUserData userData)
+        public static UserDataPrincipal InitFromAuthCookie(HttpRequestHeaders headers)
         {
-            // TODO: inject "remember me" checkbox from form
-            var authTicket = new FormsAuthenticationTicket(
-                2,
-                serviceIdUsername,
-                DateTime.Now,
-                DateTime.Now.AddMinutes(FormsAuthentication.Timeout.TotalMinutes),
-                true,
-                userData.Serialize());
+            string authCookieName = FormsAuthentication.FormsCookieName;
 
-            var authCookie = new HttpCookie(
-                FormsAuthentication.FormsCookieName,
-                FormsAuthentication.Encrypt(authTicket))
-            {
-                HttpOnly = true
-            };
+            var cookieValues = headers.GetCookies(authCookieName);
+            CookieHeaderValue authCookieValue = cookieValues.FirstOrDefault();
+            if (authCookieValue == null)
+                return null;
 
-            return authCookie;
+            CookieState authCookie = authCookieValue[authCookieName];
+            return DecryptAuthTicket(authCookie.Value);
         }
 
         public static UserDataPrincipal InitFromAuthCookie(HttpContextBase httpContext)
@@ -53,33 +60,28 @@ namespace TfsManualTester.Web.Authorization
             }
 
             var authCookie = httpContext.Request.Cookies[authCookieName];
-            var authTicket = FormsAuthentication.Decrypt(authCookie.Value);
+            return DecryptAuthTicket(authCookie.Value);
+        }
 
-            var userData = TfsUserData.DeSerialize(authTicket.UserData);
+        private static UserDataPrincipal DecryptAuthTicket(string cookieValue)
+        {
+            var authTicket = FormsAuthentication.Decrypt(cookieValue);
 
-            var principal = new UserDataPrincipal
-            {
-                UserName = authTicket.Name,
-                Password = userData.Password,
-                TfsUrl = userData.TfsUrl
-            };
-
+            var principal = new JavaScriptSerializer().Deserialize<UserDataPrincipal>(authTicket.UserData);
             return principal;
         }
 
         public static UserDataPrincipal InitFromHeaders(HttpRequestHeaders headers)
         {
             var authHeader = headers.Authorization;
-            IEnumerable<string> tfsUrlValues;
+            var tfsUrl = headers.GetTfsUrl();
             if (authHeader == null || 
                 !authHeader.Scheme.Equals("basic", StringComparison.OrdinalIgnoreCase) ||
-                !headers.TryGetValues("TfsUrl", out tfsUrlValues))
+                String.IsNullOrWhiteSpace(tfsUrl))
             {
                 return null;
             }
 
-            string tfsUrl = tfsUrlValues.FirstOrDefault();
-            
             string userName = null;
             string password = null;
 
@@ -94,12 +96,51 @@ namespace TfsManualTester.Web.Authorization
             if (String.IsNullOrWhiteSpace(tfsUrl) || String.IsNullOrWhiteSpace(userName) || String.IsNullOrWhiteSpace(password))
                 return null;
 
-            return new UserDataPrincipal
+            var principal = new UserDataPrincipal(tfsUrl, userName, password);
+            return principal;
+        }
+
+        public ICredentialsProvider GetCredentialsProvider()
+        {
+            var uri = new Uri(TfsUrl);
+
+            bool tfsService =
+                uri.Host.EndsWith("tfspreview.com", StringComparison.OrdinalIgnoreCase) ||
+                uri.Host.EndsWith("visualstudio.com", StringComparison.OrdinalIgnoreCase);
+
+            if (tfsService)
             {
-                UserName = userName,
-                Password = password,
-                TfsUrl = tfsUrl
+                return new ServiceIdentityCredentialsProvider(UserName, Password);
+            }
+            
+            var userNameTokens = UserName.Split(new[] { '\\' }, 2, StringSplitOptions.RemoveEmptyEntries);
+            var credential = userNameTokens.Length > 1
+                ? new NetworkCredential(userNameTokens[1], Password, userNameTokens[0])
+                : new NetworkCredential(UserName, Password);
+
+            return new NetworkCredentialsProvider(credential);
+        }
+
+        public HttpCookie CreateAuthCookie()
+        {
+            string cookieName = TfsUrl + "_" + UserName;
+
+            var authTicket = new FormsAuthenticationTicket(
+                2,
+                cookieName,
+                DateTime.Now,
+                DateTime.Now.AddMinutes(FormsAuthentication.Timeout.TotalMinutes),
+                true, // TODO: inject "remember me" checkbox from form
+                new JavaScriptSerializer().Serialize(this));
+
+            var authCookie = new HttpCookie(
+                FormsAuthentication.FormsCookieName,
+                FormsAuthentication.Encrypt(authTicket))
+            {
+                HttpOnly = true
             };
+
+            return authCookie;
         }
 
         public IIdentity Identity { get; private set; }

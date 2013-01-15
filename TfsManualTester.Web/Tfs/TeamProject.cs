@@ -1,32 +1,28 @@
 ﻿using System;
-using System.Net;
 using System.Web;
 using System.Web.Caching;
 using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.TestManagement.Client;
+using TfsManualTester.Web.Authorization;
 
 namespace TfsManualTester.Web.Tfs
 {
     public class TeamProject
     {
-        private static readonly object _cacheLock = new object();
+        private static readonly object _CacheLock = new object();
 
-        private readonly Uri _uri;
-        private readonly string _userName;
-        private readonly string _password;
+        private readonly UserDataPrincipal _principal;
 
         private TfsTeamProjectCollection _tfs;
 
-        public TeamProject(Uri uri, string userName, string password)
+        public TeamProject(UserDataPrincipal principal)
         {
-            _uri = uri;
-            _userName = userName;
-            _password = password;
+            _principal = principal;
         }
 
         private string CacheKey
         {
-            get { return _uri.ToString() + "_" + _userName; }
+            get { return _principal.TfsUrl + "_" + _principal.UserName; }
         }
 
         public void EnsureAuthenticated(bool allowCache)
@@ -67,30 +63,14 @@ namespace TfsManualTester.Web.Tfs
                 }
             }
 
-            lock (_cacheLock)
+            lock (_CacheLock)
             {
                 if (allowCache && _tfs != null)
                     return;
 
-                bool tfsService =
-                    _uri.Host.EndsWith("tfspreview.com", StringComparison.OrdinalIgnoreCase) ||
-                    _uri.Host.EndsWith("visualstudio.com", StringComparison.OrdinalIgnoreCase);
-
-                if (tfsService)
-                {
-                    var credentialsProvider = new ServiceIdentityCredentialsProvider(_userName, _password);
-                    _tfs = new TfsTeamProjectCollection(
-                        _uri, CredentialCache.DefaultCredentials, credentialsProvider);
-                }
-                else
-                {
-                    var userNameTokens = _userName.Split(new []{'\\'}, 2, StringSplitOptions.RemoveEmptyEntries);
-                    var credential = userNameTokens.Length > 1
-                        ? new NetworkCredential(userNameTokens[1], _password, userNameTokens[0])
-                        : new NetworkCredential(_userName, _password);
-
-                    _tfs = new TfsTeamProjectCollection(_uri, credential);
-                }
+                _tfs = new TfsTeamProjectCollection(
+                    new Uri(_principal.TfsUrl), _principal.GetCredentialsProvider());
+                    //new Uri(_principal.TfsUrl), CredentialCache.DefaultCredentials, _principal.GetCredentialsProvider());
 
                 HttpRuntime.Cache.Add(
                     CacheKey,

@@ -28,11 +28,10 @@ namespace TfsManualTester.Web.Controllers
 
             try
             {
-                new TeamProject(new Uri(tfsUrl), serviceIdUsername, serviceIdPassword)
-                    .EnsureAuthenticated(false);
+                var principal = new UserDataPrincipal(tfsUrl, serviceIdUsername, serviceIdPassword);
+                new TeamProject(principal).EnsureAuthenticated(false);
 
-                var userData = new TfsUserData {Password = serviceIdPassword, TfsUrl = tfsUrl};
-                var authCookie = UserDataPrincipal.CreateAuthCookie(serviceIdUsername, userData);
+                var authCookie = principal.CreateAuthCookie();
                 Response.AppendCookie(authCookie);
             }
             catch (Exception ex)

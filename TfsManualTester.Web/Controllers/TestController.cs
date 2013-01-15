@@ -24,9 +24,7 @@ namespace TfsManualTester.Web.Controllers
         {
             try
             {
-                var user = (UserDataPrincipal) HttpContext.User;
-
-                var tfs = new TeamProject(new Uri(user.TfsUrl), user.UserName, user.Password);
+                var tfs = new TeamProject(UserDataPrincipal.Current);
                 var tfsTestCase = tfs.GetTestCase(teamProject, testCaseId);
                 var testCase = new TestCase(tfsTestCase);
 
