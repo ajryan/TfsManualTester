@@ -42,14 +42,10 @@ namespace TfsManualTester.Web.Authorization
 
                 HttpContext.Current.Items["TFS_CONFIG_SERVER"] = tfsConfigServer;
             }
-            catch (Exception ex)
+            catch (TeamFoundationServerUnauthorizedException ex)
             {
-                if (ex is UriFormatException || ex is WebException || ex is TeamFoundationServerException)
-                {
-                    SetUnauthorizedResponse(actionContext, ex.Message);
-                    return;
-                }
-                throw;
+                SetUnauthorizedResponse(actionContext, ex.Message);
+                return;
             }
 
             HttpContext.Current.User = userDataPrincipal;

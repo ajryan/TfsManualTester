@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace TfsManualTester.Web.Models
 {
@@ -8,5 +9,6 @@ namespace TfsManualTester.Web.Models
         public string CollectionId { get; set; }
         public string ProjectName { get; set; }
         public string ProjectUri { get; set; }
+        public List<string> WorkItemTypes { get; set; }
     }
 }

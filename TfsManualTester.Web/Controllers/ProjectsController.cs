@@ -41,7 +41,8 @@ namespace TfsManualTester.Web.Controllers
                             CollectionName = collectionName,
                             CollectionId = collectionId.ToString(),
                             ProjectName = project.Name,
-                            ProjectUri = project.Uri.ToString()
+                            ProjectUri = project.Uri.ToString(),
+                            WorkItemTypes = project.WorkItemTypes.Cast<WorkItemType>().Select(wit => wit.Name).ToList()
                         };
 
                         projects.Add(projectInfo);
